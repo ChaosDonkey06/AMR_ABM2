@@ -11,9 +11,9 @@ from matplotlib import pyplot as plt
 from matplotlib import ticker
 
 # Plot Tong's default setting
-SMALL_SIZE  = 28
-MEDIUM_SIZE = 28
-BIGGER_SIZE = 28
+SMALL_SIZE  = 15
+MEDIUM_SIZE = 18
+BIGGER_SIZE = 22
 
 plt.rc('font', size=SMALL_SIZE, family='sans-serif', serif='Arial')          # controls default text sizes
 plt.rc('axes', titlesize=BIGGER_SIZE)     # fontsize of the axes title
