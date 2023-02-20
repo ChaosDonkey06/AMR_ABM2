@@ -1,0 +1,9 @@
+amro,prevalence_mean1,prevalence_mean2,low_95.1,high_95.1,low_95.2,high_95.2,reference1,reference2
+e_coli,63,,,,,,,
+p_aeruginosa,11.6,18.75,,,,,,
+mrsa,25,29,,,,,,
+mssa,0.4,3.9,,,,,,
+k_pneumoniae,23,,,,,,,
+s_epidermis,58,75,,,,,,
+e_faecalis,47.6,36.8,,,,,,
+e_faecium,40.6,36.8,,,,,,
