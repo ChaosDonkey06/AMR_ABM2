@@ -47,11 +47,12 @@ def process_metapop(t, x, gamma, beta, delta, Nmean, N, A, D, M, model_settings)
 
     with np.errstate(divide='ignore', invalid='ignore'):
 
-        moveitojC = np.full((num_pop,num_pop,m),0)
+        moveitojC = np.full((num_pop, num_pop, m),0)
+
         for j in range(0, num_pop):
             for i in range(0,num_pop):
-                if(i!=j):
-                    moveitojC[i,j,:] = transition_b(M[i,j], np.clip(np.nan_to_num(C[i, :] / N[i, :]),0,1), m)
+                if i!=j:
+                    moveitojC[i, j,:] = transition_b(M[i,j], np.clip(np.nan_to_num(C[i, :] / N[i, :]),0,1), m)
 
         AC       = np.zeros((num_pop, m))
         DC       = np.zeros((num_pop, m))
