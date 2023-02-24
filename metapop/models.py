@@ -13,7 +13,7 @@ def poisson_transition(n, rate, m):
     return np.random.poisson(np.nan_to_num(n * rate), m)
 
 def deterministic_transition(n, rate):
-    return np.round(snp.nan_to_num(n * rate), 0)
+    return np.round(np.nan_to_num(n * rate), 0)
 
 def check_state_space(x, pop=None):
     return np.clip(x, 0, pop)
