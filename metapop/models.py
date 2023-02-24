@@ -13,13 +13,12 @@ def poisson_transition(n, rate, m):
     return np.random.poisson(np.nan_to_num(n * rate), m)
 
 def deterministic_transition(n, rate):
-    return np.round(np.nan_to_num(n * rate), 0)
+    return np.round(snp.nan_to_num(n * rate), 0)
 
 def check_state_space(x, pop=None):
     return np.clip(x, 0, pop)
 
 def process_metapop(t, x, gamma, beta, delta, Nmean, N, A, D, M, model_settings):
-
     """ Susceptible - Colonized meta-population model
 
     Args:
@@ -34,6 +33,7 @@ def process_metapop(t, x, gamma, beta, delta, Nmean, N, A, D, M, model_settings)
     Returns:
         x[t+1]: State space in t+1.
     """
+
     num_pop    = model_settings["num_pop"]
     m          = model_settings["m"]
     stochastic = model_settings["stochastic"]
@@ -41,12 +41,6 @@ def process_metapop(t, x, gamma, beta, delta, Nmean, N, A, D, M, model_settings)
     C = x[range(0,num_pop), :]
     N = np.reshape([N]*m,(m,num_pop)).T
     S = np.clip(N - C,0,N)
-
-    if(len(beta.shape)==1) :
-        beta = np.reshape([beta]*num_pop, (num_pop, m))
-
-    if((np.any(S<0)) | (np.any(C<0))) :
-       print(t)
 
     transition_b = lambda n, prob, m: binomial_transition(n, prob, m) if stochastic else deterministic_transition(n, prob)
     transition_p = lambda n, rate, m: poisson_transition(n, rate, m) if stochastic else deterministic_transition(n, rate)
@@ -57,24 +51,27 @@ def process_metapop(t, x, gamma, beta, delta, Nmean, N, A, D, M, model_settings)
         for j in range(0, num_pop):
             for i in range(0,num_pop):
                 if(i!=j):
-                    moveitojC[i,j,:] = transition_b(M[i,j], np.clip(np.nan_to_num(C[i, :]/N[i, :]),0,1), m)
+                    moveitojC[i,j,:] = transition_b(M[i,j], np.clip(np.nan_to_num(C[i, :] / N[i, :]),0,1), m)
 
-        AC                = np.zeros((num_pop, m))
-        DC                = np.zeros((num_pop, m))
-        newC              = np.zeros((num_pop, m))
-        leftC             = np.zeros((num_pop, m))
-        moveinC           = np.zeros((num_pop, m))
-        moveoutC          = np.zeros((num_pop, m))
+        AC       = np.zeros((num_pop, m))
+        DC       = np.zeros((num_pop, m))
+        newC     = np.zeros((num_pop, m))
+        leftC    = np.zeros((num_pop, m))
+        moveinC  = np.zeros((num_pop, m))
+        moveoutC = np.zeros((num_pop, m))
 
         for j in range(0,num_pop) :
-            AC[j,:]       = transition_b(A[j], gamma, m)                                         # admitted colonized
+            AC[j, :]      = transition_b(A[j], gamma, m)                                         # admitted colonized
             DC[j,:]       = transition_b(D[j], np.clip(np.nan_to_num(C[j, :]/N[j, :]),0,1), m)   # discharged colonized
 
             newC[j,:]     = transition_p(S[j, :], np.nan_to_num(beta[j, :]*C[j, :]/Nmean[j]), m) # new colonized
             leftC[j,:]    = transition_p(C[j, :], delta, m)
-            moveinC[j,:]  = np.sum(moveitojC[:,j,:],0)
-            moveoutC[j,:] = np.sum(moveitojC[j,:,:],0)
-            C[j, :]       = np.clip(C[j, :] + AC[j,:] - DC[j,:] + newC[j,:] - leftC[j,:] + moveinC[j,:] - moveoutC[j,:],0,N[j,:])
+
+            moveinC[j,:]  = np.sum(moveitojC[:,j,:], 0)
+            moveoutC[j,:] = np.sum(moveitojC[j,:,:], 0)
+
+            C[j, :]       = C[j, :] + AC[j,:] - DC[j,:] + newC[j,:] - leftC[j,:] + moveinC[j,:] - moveoutC[j,:]
+            C[j, :]       = np.clip(C[j, :], 0, N[j,:])
 
     return check_state_space(np.concatenate((C,AC,newC)))
 
