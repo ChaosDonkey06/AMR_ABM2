@@ -5,12 +5,11 @@ import numpy as np
 #    kb    = np.maximum(1.0 - np.exp(-tau*dt), 0)
 #    pop   = np.random.binomial(list(xi), kb, m)
 #    return pop
+def binomial_transition(n, prob):
+    return np.random.binomial(n, prob)
 
-def binomial_transition(n, prob, m):
-    return np.random.binomial(n, prob, m)
-
-def poisson_transition(n, rate, m):
-    return np.random.poisson(np.nan_to_num(n * rate), m)
+def poisson_transition(n, rate):
+    return np.random.poisson(np.nan_to_num(n * rate))
 
 def deterministic_transition(n, rate):
     return np.round(np.nan_to_num(n * rate), 0)
@@ -18,7 +17,8 @@ def deterministic_transition(n, rate):
 def check_state_space(x, pop=None):
     return np.clip(x, 0, pop)
 
-def process_metapop(t, x, gamma, beta, delta, Nmean, N, A, D, M, model_settings):
+def process_metapop(t, x, gamma, beta, delta, Nmean, N, A, D, M, model_settings=None):
+
     """ Susceptible - Colonized meta-population model
 
     Args:
@@ -33,50 +33,29 @@ def process_metapop(t, x, gamma, beta, delta, Nmean, N, A, D, M, model_settings)
     Returns:
         x[t+1]: State space in t+1.
     """
-
-    num_pop    = model_settings["num_pop"]
-    m          = model_settings["m"]
-    stochastic = model_settings["stochastic"]
-
-    C = x[range(0,num_pop), :]
-    N = np.reshape([N]*m,(m,num_pop)).T
+    C = x[0, :, :]
     S = np.clip(N - C,0,N)
 
-    transition_b = lambda n, prob, m: binomial_transition(n, prob, m) if stochastic else deterministic_transition(n, prob)
-    transition_p = lambda n, rate, m: poisson_transition(n, rate, m) if stochastic else deterministic_transition(n, rate)
+    c = np.clip(np.nan_to_num(C/N), 0, 1)
 
-    with np.errstate(divide='ignore', invalid='ignore'):
+    λ = beta * C / Nmean # force of infection
 
-        moveitojC = np.full((num_pop, num_pop, m),0)
+    # moving out and in colonized
+    Cout  = binomial_transition(list(np.sum(M, axis=1, keepdims=True)), c)
+    Cin   = M.T @ c
 
-        for j in range(0, num_pop):
-            for i in range(0,num_pop):
-                if i!=j:
-                    moveitojC[i, j,:] = transition_b(M[i,j], np.clip(np.nan_to_num(C[i, :] / N[i, :]),0,1), m)
+    a2c   = binomial_transition(list(A), gamma) # people admitted colonized.
+    c2d   = binomial_transition(list(D), c)     # discharged colonized
 
-        AC       = np.zeros((num_pop, m))
-        DC       = np.zeros((num_pop, m))
-        newC     = np.zeros((num_pop, m))
-        leftC    = np.zeros((num_pop, m))
-        moveinC  = np.zeros((num_pop, m))
-        moveoutC = np.zeros((num_pop, m))
+    s2c  = poisson_transition(S, λ)     # new colonized
+    c2s  = poisson_transition(C, delta) # decolonizations
 
-        for j in range(0,num_pop) :
-            AC[j, :]      = transition_b(A[j], gamma, m)                                         # admitted colonized
-            DC[j,:]       = transition_b(D[j], np.clip(np.nan_to_num(C[j, :]/N[j, :]),0,1), m)   # discharged colonized
+    C    = C + a2c - c2d + s2c + c2s + Cin - Cout
+    C    = np.clip(C, 0, N)
 
-            newC[j,:]     = transition_p(S[j, :], np.nan_to_num(beta[j, :]*C[j, :]/Nmean[j]), m) # new colonized
-            leftC[j,:]    = transition_p(C[j, :], delta, m)
+    return check_state_space(np.array([C, a2c, s2c]))
 
-            moveinC[j,:]  = np.sum(moveitojC[:,j,:], 0)
-            moveoutC[j,:] = np.sum(moveitojC[j,:,:], 0)
-
-            C[j, :]       = C[j, :] + AC[j,:] - DC[j,:] + newC[j,:] - leftC[j,:] + moveinC[j,:] - moveoutC[j,:]
-            C[j, :]       = np.clip(C[j, :], 0, N[j,:])
-
-    return check_state_space(np.concatenate((C,AC,newC)))
-
-def observe_metapop(t, x, N, rho, tests, model_settings):
+def observe_metapop(t, x, N, rho, num_tests, model_settings):
     """ Observational model
         Args:
             t (int):      Time
@@ -88,15 +67,12 @@ def observe_metapop(t, x, N, rho, tests, model_settings):
 
     m       = model_settings["m"]
     num_pop = model_settings["num_pop"]
-    C       = x[range(0,num_pop), :]
-    N       = np.reshape([N]*m,(m,num_pop)).T
-    tests   = np.reshape(list(tests)*m,(m,len(tests))).T
+    C       = x[0, :, :]
 
     with np.errstate(divide='ignore', invalid='ignore'):
-        observed_colonized = np.random.binomial(tests.astype('int'), rho * np.nan_to_num(C/N))
+        observed_colonized = np.random.binomial(list(num_tests * np.ones((num_pop, m))), rho * np.clip(np.nan_to_num(C/N), 0, 1))
 
     return observed_colonized
-
 
 def init_metapop(N0, c0, model_settings):
     """ Initial conditions model.
@@ -109,14 +85,12 @@ def init_metapop(N0, c0, model_settings):
     m       = model_settings["m"]
     num_pop = model_settings["num_pop"]
 
-    N  = np.reshape([N0] * m, (m, num_pop)).T
-    c0 = np.reshape([c0] * num_pop, (m, num_pop)).T
-    C  = c0*N
-
+    N0 = np.expand_dims(N0, -1) * np.ones((num_pop, m))
+    C0   = c0 * N0
     AC   = np.zeros((num_pop, m))
     newC = np.zeros((num_pop, m))
 
-    return np.concatenate((C, AC, newC))
+    return np.array([C0, AC, newC])
 
 
 def simulate(model, observe, initial_x0, θsim, model_settings):
