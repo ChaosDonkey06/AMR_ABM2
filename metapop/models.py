@@ -126,7 +126,6 @@ def simulate_metapop(process_model, observational_model, init_state, θsim, mode
     return x_sim, y_sim
 
 
-
 def simulate_metapop_observations(process_model, observational_model, init_state, θsim, model_settings):
     """ Simulate model with initial conditions and parameters
         x \in R^{n/num_pop x num_pop x ms}
