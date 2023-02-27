@@ -114,13 +114,13 @@ def simulate_metapop(process_model, observational_model, init_state, θsim, mode
     if(x0.shape[0] != n/num_pop or x0.shape[2] != m or x0.shape[1] != num_pop) :
         print('error in x0 dimensions')
 
-    x_sim = np.full((3, model_settings["num_pop"], m, T), np.nan)
-    y_sim = np.full((k, m, T), np.nan)
+    x_sim = np.full((T, n/num_pop, num_pop, m), np.nan)
+    y_sim = np.full((T, k, m), np.nan)
 
-    x_sim[:, :, :, 0] = x0
-    y_sim[:, :, 0]    = observational_model(0, x0, θsim)
+    x_sim[0, :, :, :] = x0
+    y_sim[0, :, :]    = observational_model(0, x0, θsim)
     for t in range(1, T-1):
-        x_sim[:, :, :, t] = process_model(t, x_sim[:, :, :, t-1], θsim)
-        y_sim[:, :, t]    = observational_model(t, x_sim[:, :, :, t], θsim)
+        x_sim[t, :, :, :] = process_model(t, x_sim[t-1, :, :, :], θsim)
+        y_sim[t, :, :]    = observational_model(t, x_sim[t, :, :, :], θsim)
 
     return x_sim, y_sim
