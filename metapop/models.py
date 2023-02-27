@@ -35,8 +35,8 @@ def process_metapop(t, x, gamma, beta, delta, Nmean, N, A, D, M, model_settings=
     """
     C = x[0, :, :]
     S = np.clip(N - C,0,N)
-
-    c = np.clip(np.nan_to_num(C/N), 0, 1)
+    with np.errstate(divide='ignore', invalid='ignore'):
+        c = np.clip(np.nan_to_num(C/N), 0, 1)
 
     λ = beta * C / Nmean # force of infection
 
@@ -70,7 +70,9 @@ def observe_metapop(t, x, N, rho, num_tests, model_settings):
     C       = x[0, :, :]
 
     with np.errstate(divide='ignore', invalid='ignore'):
-        observed_colonized = np.random.binomial(list(num_tests * np.ones((num_pop, m))), rho * np.clip(np.nan_to_num(C/N), 0, 1))
+        c = np.clip(np.nan_to_num(C/N), 0, 1)
+
+    observed_colonized = np.random.binomial(list(num_tests * np.ones((num_pop, m))), rho * c)
 
     return observed_colonized
 
