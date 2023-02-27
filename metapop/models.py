@@ -92,9 +92,10 @@ def init_metapop(N0, c0, model_settings):
 
     return np.array([C0, AC, newC])
 
+def simulate_metapop(process_model, observational_model, init_state, θsim, model_settings):
 
-def simulate(model, observe, initial_x0, θsim, model_settings):
     """ Simulate model with initial conditions and parameters
+        x \in R^{n/num_pop x num_pop x ms}
 
     Args:
         model (function):        Process model
@@ -102,23 +103,24 @@ def simulate(model, observe, initial_x0, θsim, model_settings):
         initial_x0 (function):   Initial condition guess model.
         θ_sim (np.array):        Parameters
     """
-
     n = model_settings["n"]
     k = model_settings["k"]
     m = model_settings["m"]
     T = model_settings["T"]
+    num_pop = model_settings["num_pop"]
 
-    x0 = initial_x0(θsim)
-    if(x0.shape[0] != n or x0.shape[1] != m) :
+    x0 = init_state(θsim)
+
+    if(x0.shape[0] != n/num_pop or x0.shape[2] != m or x0.shape[1] != num_pop) :
         print('error in x0 dimensions')
 
-    x_sim = np.full((n, m, T), np.nan)
+    x_sim = np.full((3, model_settings["num_pop"], m, T), np.nan)
     y_sim = np.full((k, m, T), np.nan)
 
-    x_sim[:, :, 0] = x0
-    y_sim[:, :, 0] = observe(0, x0, θsim)
-    for t in range(1, T):
-        x_sim[:, :, t] = model(t, x_sim[:, :, t-1], θsim)
-        y_sim[:, :, t] = observe(t, x_sim[:, :, t], θsim)
+    x_sim[:, :, :, 0] = x0
+    y_sim[:, :, 0]    = observational_model(0, x0, θsim)
+    for t in range(1, T-1):
+        x_sim[:, :, :, t] = process_model(t, x_sim[:, :, :, t-1], θsim)
+        y_sim[:, :, t]    = observational_model(t, x_sim[:, :, :, t], θsim)
 
     return x_sim, y_sim
