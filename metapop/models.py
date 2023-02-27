@@ -93,7 +93,6 @@ def init_metapop(N0, c0, model_settings):
     return np.array([C0, AC, newC])
 
 def simulate_metapop(process_model, observational_model, init_state, θsim, model_settings):
-
     """ Simulate model with initial conditions and parameters
         x \in R^{n/num_pop x num_pop x ms}
 
@@ -109,18 +108,54 @@ def simulate_metapop(process_model, observational_model, init_state, θsim, mode
     T = model_settings["T"]
     num_pop = model_settings["num_pop"]
 
+
+    x_sim = np.full((T, int(n/num_pop), num_pop, m), np.nan)
+    y_sim = np.full((T, k, m), np.nan)
+
     x0 = init_state(θsim)
 
     if(x0.shape[0] != n/num_pop or x0.shape[2] != m or x0.shape[1] != num_pop) :
         print('error in x0 dimensions')
 
-    x_sim = np.full((T, n/num_pop, num_pop, m), np.nan)
-    y_sim = np.full((T, k, m), np.nan)
-
     x_sim[0, :, :, :] = x0
     y_sim[0, :, :]    = observational_model(0, x0, θsim)
-    for t in range(1, T-1):
+    for t in range(1, T):
         x_sim[t, :, :, :] = process_model(t, x_sim[t-1, :, :, :], θsim)
         y_sim[t, :, :]    = observational_model(t, x_sim[t, :, :, :], θsim)
 
     return x_sim, y_sim
+
+
+
+def simulate_metapop_observations(process_model, observational_model, init_state, θsim, model_settings):
+    """ Simulate model with initial conditions and parameters
+        x \in R^{n/num_pop x num_pop x ms}
+
+    Args:
+        model (function):        Process model
+        observe (function):      Observational model
+        initial_x0 (function):   Initial condition guess model.
+        θ_sim (np.array):        Parameters
+    """
+    n = model_settings["n"]
+    k = model_settings["k"]
+    m = model_settings["m"]
+    T = model_settings["T"]
+    num_pop = model_settings["num_pop"]
+
+
+    x_sim = np.full((T, int(n/num_pop), num_pop, m), np.nan)
+    y_sim = np.full((T, k, m), np.nan)
+
+    x0 = init_state(θsim)
+
+    if(x0.shape[0] != n/num_pop or x0.shape[2] != m or x0.shape[1] != num_pop) :
+        print('error in x0 dimensions')
+
+    x              = x0
+    y_sim[0, :, :] = observational_model(0, x0, θsim)
+    for t in range(1, T):
+        x              =  process_model(t, x, θsim)
+        y_sim[t, :, :] = observational_model(t, x, θsim)
+
+    return y_sim
