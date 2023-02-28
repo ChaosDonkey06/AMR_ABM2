@@ -34,7 +34,7 @@ def process_metapop(t, x, gamma, beta, delta, Nmean, N, A, D, M, model_settings=
         x[t+1]: State space in t+1.
     """
     C = x[0, :, :]
-    S = np.clip(N - C,0,N)
+    S = np.clip(N - C, 0, N)
     with np.errstate(divide='ignore', invalid='ignore'):
         c = np.clip(np.nan_to_num(C/N), 0, 1)
 
@@ -126,7 +126,6 @@ def simulate_metapop(process_model, observational_model, init_state, θsim, mode
         y_sim[t, :, :]    = observational_model(t, x_sim[t, :, :, :], θsim)
 
     return x_sim, y_sim
-
 
 def simulate_metapop_observations(process_model, observational_model, init_state, θsim, model_settings):
     """ Simulate model with initial conditions and parameters
