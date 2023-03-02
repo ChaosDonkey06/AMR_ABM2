@@ -94,6 +94,32 @@ def init_metapop(N0, c0, model_settings):
 
     return np.array([C0, AC, newC])
 
+def observe_metapop_cluster(t, x, N, rho, num_tests, ward2cluster, model_settings):
+    """ Observational model
+        Args:
+            t (int):      Time
+            x (np.array): State space
+            rho (float):  Observation probability
+        Returns:
+            y (np.array): Observed carriers ~ Binomial(C, rho).
+    """
+
+    m         = model_settings["m"]
+    num_pop   = model_settings["num_pop"]
+    num_build = model_settings["num_build"]
+
+    with np.errstate(divide='ignore', invalid='ignore'):
+        c = np.clip(np.nan_to_num(x[0, :, :]/N), 0, 1)
+
+    observed_colonized = np.random.binomial(list(num_tests * np.ones((num_pop, m))), rho * c)  # Shape [num_pop, m]
+    # need to resample this to [num_buildings x m] (maybe using the same buildings that rami used)
+    obs_col_building = np.zeros((num_build, m))
+
+    for i in range(num_build):
+        obs_col_building[ward2cluster[i], :] += observed_colonized[i, :]
+
+    return obs_col_building
+
 def simulate_metapop(process_model, observational_model, init_state, θsim, model_settings):
     """ Simulate model with initial conditions and parameters
         x \in R^{n/num_pop x num_pop x ms}
