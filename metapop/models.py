@@ -115,7 +115,7 @@ def observe_metapop_cluster(t, x, N, rho, num_tests, ward2cluster, model_setting
     # need to resample this to [num_buildings x m] (maybe using the same buildings that rami used)
     obs_col_building = np.zeros((num_build, m))
 
-    for i in range(num_build):
+    for i in range(num_pop):
         obs_col_building[ward2cluster[i], :] += observed_colonized[i, :]
 
     return obs_col_building
@@ -135,7 +135,6 @@ def simulate_metapop(process_model, observational_model, init_state, θsim, mode
     m = model_settings["m"]
     T = model_settings["T"]
     num_pop = model_settings["num_pop"]
-
 
     x_sim = np.full((T, int(n/num_pop), num_pop, m), np.nan)
     y_sim = np.full((T, k, m), np.nan)
