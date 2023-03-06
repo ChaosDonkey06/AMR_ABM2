@@ -50,7 +50,7 @@ def process_metapop(t, x, gamma, beta, delta, Nmean, N, A, D, M, model_settings=
     s2c  = poisson_transition(S, λ)     # new colonized
     c2s  = poisson_transition(C, delta) # decolonizations
 
-    C    = C + a2c - c2d + s2c + c2s + Cin - Cout
+    C    = C + a2c - c2d + s2c - c2s + Cin - Cout
     C    = np.clip(C, 0, N)
 
     return check_state_space(np.array([C, a2c, s2c]))
