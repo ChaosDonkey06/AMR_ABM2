@@ -32,3 +32,9 @@ def create_time_transfers(path_to_file, num_wards, ward_names, date_start=pd.to_
                 transfered              = transfers_ij.num_transfered.values
                 M_df[i, j, dates_ind-1] = transfered
     return M_df
+
+def empirical_prevalence(amro, path_to_prev="../data/amro_prevalence.csv"):
+    amro_prev_df = pd.read_csv(path_to_prev)
+    gamma        = amro_prev_df[amro_prev_df.amro==amro]["prevalence_mean1"].values[0]/100
+    return gamma
+
