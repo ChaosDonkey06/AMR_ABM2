@@ -36,7 +36,7 @@ def amr_abm(t, agents_state, gamma, beta, alpha, movement, ward2size, model_sett
     p_update = np.clip(p_update, 0, 1)
     return p_update
 
-def observe_cluster(t, agents_state, movement, rho, model_settings):
+def observe_cluster_individual(t, agents_state, movement, rho, model_settings):
     ρ      = rho                  # effective sensitivity.
     k      = model_settings["k"]  # number of observations / clusters / buildings
     m      = model_settings["m"]  # number of clusters
@@ -46,6 +46,26 @@ def observe_cluster(t, agents_state, movement, rho, model_settings):
     for i, cluster in enumerate(movement["cluster"].unique()):
         patients_test_ward            = movement.query(f"cluster=={cluster} and test==True")["mrn_id"].values
         cluster_positive[cluster,  :] = np.sum(p_test[patients_test_ward, :]    == Observed.yes, axis=0)
+
+    return cluster_positive
+
+
+def observe_cluster_population(t, agents_state, movement, rho, model_settings):
+    ρ      = rho                  # effective sensitivity.
+    k      = model_settings["k"]  # number of observations / clusters / buildings
+    m      = model_settings["m"]  # number of clusters
+
+    cluster_positive  = np.zeros((k, m))
+    for i, cluster in enumerate(movement["cluster"].unique()):
+        patients_test_ward            = movement.query(f"cluster=={cluster} and test==True")["mrn_id"].values
+        num_tests                     = patients_test_ward.shape[0] # number of tests in the cluster
+        C = np.sum(agents_state[patients_test_ward, :]    == Patient.colonized, axis=0)
+        N = np.unique(movement.query(f"cluster=={cluster}")["mrn_id"].values).shape[0]
+
+        with np.errstate(divide='ignore', invalid='ignore'):
+            c = np.clip(np.nan_to_num(C/N), 0, 1)
+
+        cluster_positive[cluster,  :] = np.random.binomial(num_tests, c)
 
     return cluster_positive
 
