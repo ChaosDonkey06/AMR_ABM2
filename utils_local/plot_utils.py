@@ -2,7 +2,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-
 from matplotlib.dates import date2num, num2date
 from matplotlib.colors import ListedColormap
 from matplotlib import dates as mdates
