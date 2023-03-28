@@ -79,7 +79,7 @@ def run_amro_synthetic(f, f0, g, fsim, model_settings, if_settings, id_run=0, pa
 
     state_space_range = np.array([0, 1])
     parameters_range  = np.array([[ρmin, ρmax],    [βmin, βmax]])
-    σ_perturb         = np.array([(ρmax - ρmin)/4, (βmax - βmin)/4]) # (i hve the gut feeling that 0.25 is too large)
+    σ_perturb         = np.array([(ρmax - ρmin)/10, (βmax - βmin)/10]) # (i hve the gut feeling that 0.25 is too large)
 
     θmle, θpost = ifeakf(process_model                = f,
                             state_space_initial_guess = f0,
