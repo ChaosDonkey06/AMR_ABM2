@@ -180,7 +180,7 @@ def simulate_metapop_observations(process_model, observational_model, init_state
     x              = x0
     y_sim[0, :, :] = observational_model(0, x0, θsim)
     for t in range(1, T):
-        x              =  process_model(t, x, θsim)
+        x              = process_model(t, x, θsim)
         y_sim[t, :, :] = observational_model(t, x, θsim)
 
     return y_sim
