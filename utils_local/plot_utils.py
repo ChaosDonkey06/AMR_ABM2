@@ -57,6 +57,7 @@ def figure_size_setting(WIDTH):
 def format_axis(ax, week=True):
     ax.tick_params(which='both', axis='x', labelrotation=90)
     ax.xaxis.set_major_formatter(mdates.DateFormatter('%b-%y'))
+
     if week:
         ax.xaxis.set_minor_locator(mdates.WeekdayLocator())
     ax.xaxis.set_major_locator(mdates.MonthLocator())

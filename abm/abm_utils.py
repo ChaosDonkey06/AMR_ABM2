@@ -25,6 +25,7 @@ def simulate_abm(f, f0, g, θ, model_settings):
 
 def create_obs_infer(obs_sim, idx_infer, dates, model_settings, resample="W-Sun"):
     # obs_sim \in R^{[k x T x m]} as required by pompjax
+
     infer_df = pd.DataFrame(index=dates)
     for i in range(model_settings["k"]) :
         infer_df['y'+str(i+1)]   = obs_sim[i, :, idx_infer]
@@ -57,7 +58,7 @@ from diagnostic_plots import convergence_plot
 from utils import create_df_response
 from ifeakf import ifeakf
 
-def run_amro_synthetic(f, f0, g, fsim, model_settings, if_settings, id_run=0, path_to_save=None):
+def run_amro_synthetic(f, f0, g, fsim, model_settings, if_settings, id_run=0, path_to_save=None, use_mean=False):
     dates        = pd.date_range(start=pd.to_datetime("2020-02-01"), end=pd.to_datetime("2021-02-28"), freq="D")
 
     θtruth  = np.array([model_settings["param_truth"]]).T * np.ones((model_settings["p"], model_settings["m"]))
@@ -69,8 +70,14 @@ def run_amro_synthetic(f, f0, g, fsim, model_settings, if_settings, id_run=0, pa
                     θ              = θtruth,
                     model_settings = model_settings)
 
-    idx_infer = np.random.randint(model_settings["m"])
-    obs_df    = create_obs_infer(y_sim.transpose(1, 0, 2), idx_infer, dates, model_settings, resample="W-Sun")
+    # obs_sim \in R^{[k x T x m]} as required by pompjax
+    if use_mean:
+        obs_s     = np.mean(y_sim.transpose(1, 0, 2), axis=-1, keepdims=True)
+        obs_df    = create_obs_infer(obs_s, 0, dates, model_settings, resample="W-Sun")
+        idx_infer = "mean"
+    else:
+        idx_infer = np.random.randint(model_settings["m"])
+        obs_df    = create_obs_infer(y_sim.transpose(1, 0, 2), idx_infer, dates, model_settings, resample="W-Sun")
 
     ρmin              = 0.01/2 # test sensitivity minimum
     ρmax              = 0.2    # test sensitivity maximum
