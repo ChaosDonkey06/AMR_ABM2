@@ -59,8 +59,8 @@ from utils import create_df_response
 from ifeakf import ifeakf
 
 def run_amro_synthetic(f, f0, g, fsim, model_settings, if_settings, id_run=0, path_to_save=None, use_mean=False):
-    dates        = pd.date_range(start=pd.to_datetime("2020-02-01"), end=pd.to_datetime("2021-02-28"), freq="D")
 
+    dates   = pd.date_range(start=pd.to_datetime("2020-02-01"), end=pd.to_datetime("2021-02-28"), freq="D")
     θtruth  = np.array([model_settings["param_truth"]]).T * np.ones((model_settings["p"], model_settings["m"]))
 
 
@@ -82,7 +82,7 @@ def run_amro_synthetic(f, f0, g, fsim, model_settings, if_settings, id_run=0, pa
     ρmin              = 0.01/2 # test sensitivity minimum
     ρmax              = 0.2    # test sensitivity maximum
     βmin              = 0.00   # transmission rate minimum
-    βmax              = 0.11   # transmission rate maximum
+    βmax              = 0.2   # transmission rate maximum
 
     state_space_range = np.array([0, 1])
     parameters_range  = np.array([[ρmin, ρmax],    [βmin, βmax]])
