@@ -1,6 +1,7 @@
 
 pompjax/*
-
+manuscript/building2title.py
+utils_local/building2title.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
