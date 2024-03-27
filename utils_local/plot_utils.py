@@ -9,7 +9,7 @@ from matplotlib.patches import Patch
 from matplotlib import pyplot as plt
 from matplotlib import ticker
 
-# Plot Tong's default setting
+# Plot default setting
 SMALL_SIZE  = 15
 MEDIUM_SIZE = 18
 BIGGER_SIZE = 22

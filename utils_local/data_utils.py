@@ -54,7 +54,6 @@ def load_movement_df(path_to_movement_data, return_ward=False):
 
     return movement_df, ward2community
 
-
 def ward2size(movement_dataframe):
     wrd_size_df = movement_dataframe.reset_index()
     wrd_size_df["num_patients"] = 1

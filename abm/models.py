@@ -26,6 +26,7 @@ def amr_abm(t, agents_state, gamma, beta, alpha, movement, ward2size, model_sett
     p_update = Patient.susceptible * (agents_state * np.random.random(size=(n, m)) <= alpha)
 
     new_patients = movement[movement["first_day"]==1]["mrn_id"].values
+
     if new_patients.shape[0] > 0:
         p_update[new_patients, :] = Patient.colonized * (np.random.random(size=(new_patients.shape[0], m)) <= gamma)
 
@@ -34,6 +35,7 @@ def amr_abm(t, agents_state, gamma, beta, alpha, movement, ward2size, model_sett
         λ_i = beta * np.sum(p_update[patients_ward, :]==Patient.colonized) / ward2size[ward_id]
         p_update[patients_ward, :] = p_update[patients_ward, :] + Patient.colonized * (np.random.random(size=(patients_ward.shape[0], m)) <= λ_i)
     p_update = np.clip(p_update, 0, 1)
+
     return p_update
 
 def observe_cluster_individual(t, agents_state, movement, rho, model_settings):

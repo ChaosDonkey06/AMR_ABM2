@@ -48,7 +48,7 @@ def IF2_eakf_ABM(model, pos_obs_df, neg_obs_df, movement_df, param_prior_dict, i
         param_post_time   = np.full((if2_settings["num_params"], if2_settings["num_ensembles"], num_steps), np.nan)
 
         obs_post_time_pos = np.full((abm_settings["num_clusters"], if2_settings["num_ensembles"], num_steps), np.nan)
-        obs_post_time_neg = np.full((po["num_clusters"], if2_settings["num_ensembles"], num_steps), np.nan)
+        obs_post_time_neg = np.full((abm_settings["num_clusters"], if2_settings["num_ensembles"], num_steps), np.nan)
 
         idx_date_update   = 0
 
