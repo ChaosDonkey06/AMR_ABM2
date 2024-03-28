@@ -13,7 +13,7 @@
 
 module load python/intel/3.8.6
 
-RUNDIR=$SCRATCH/jc12343/shaman_lab/AMR_ABM2/abm
+RUNDIR=/scratch/jc12343/shaman_lab/AMR_ABM2/abm
 cd $RUNDIR
 
 PARRAY=(0 1 2 3 4 5 6)
