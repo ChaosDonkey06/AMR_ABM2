@@ -46,7 +46,7 @@ amro_search  = ['ESCHERICHIA COLI', 'KLEBSIELLA PNEUMONIAE',  'PSEUDOMONAS AERUG
                 'ENTEROCOCCUS FAECALIS', 'ENTEROCOCCUS FAECIUM']
 
 amro_idx = parser.parse_args().amro_idx
-amro     = amro_search[amro_idx]
+amro     = amro_search[amro_idx-1]
 
 print("RUNNING FOR AMRO: ", amro)
 ####
