@@ -9,6 +9,7 @@
 #SBATCH --mail-type=END
 #SBATCH --mail-user=jc12343@nyu.edu
 #SBATCH --output=slurm_%j.out
+#SBATCH --array=0-6
 
 module load python/intel/3.8.6
 
@@ -18,4 +19,4 @@ cd $RUNDIR
 PARRAY=(0 1 2 3 4 5 6)
 
 ## Execute the desired Stata do file script
-ipython InferenceReadmission_HPC.py --amro_idx $1
+python3 InferenceReadmission_HPC.py --amro_idx $(SLURM_ARRAY_TASK_ID)
