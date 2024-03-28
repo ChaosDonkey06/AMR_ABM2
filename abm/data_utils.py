@@ -7,7 +7,9 @@ def create_obs_building_amro(amro, model_settings, ward2building_dict, path_to_d
 
     amro_df["buildingid"] = amro_df["ward_total"].map(ward2building_dict)
 
-    amro_df               = amro_df.groupby(["date", "buildingid"]).sum(numeric_only=True).unstack([1]).resample(resample).sum(numeric_only=True).stack().reset_index()
+    #amro_df               = amro_df.groupby(["date", "buildingid"]).sum(numeric_only=True).unstack([1]).resample(resample).sum(numeric_only=True).stack().reset_index()
+    amro_df               = amro_df.groupby(["date", "buildingid"]).sum().unstack([1]).resample(resample).sum().stack().reset_index()
+
     amro_df["obs_name"]   = amro_df["buildingid"].map({i: f"y{i+1}" for i in range(k)})
     amro_df               = pd.pivot(amro_df, index="date", columns="obs_name", values="num_positives").reset_index()
     for i in range(k):
