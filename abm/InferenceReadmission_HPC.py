@@ -216,6 +216,7 @@ if_settings["adjust_state_space"] = False
 if_settings["shrink_variance"]    = False
 
 for idx_gamma, gamma in enumerate(gammas):
+    print(f"Running for prevalence: {idx_gamma}, {gamma}")
 
     path_to_samples = os.path.join(path_to_save, "infer_building", "individual_observation",
                                 f"prevalence{idx_gamma}", "readmissions")
