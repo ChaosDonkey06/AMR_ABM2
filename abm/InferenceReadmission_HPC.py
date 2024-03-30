@@ -200,11 +200,8 @@ from infer_utils import run_amro_inference
 
 ########-########-#######
 
-
-
 path_to_amro = os.path.join(data_cluster_dir, "long_files_8_25_2021", "amro_ward.csv" )
-
-id_run                            = 1
+id_run       = 1
 
 print("Running IF-EAKF for amro: ", amro2title(amro))
 path_to_save = os.path.join(results_cluster_dir, "amro_inferences", "abm", f"{amro2cute(amro)}")
