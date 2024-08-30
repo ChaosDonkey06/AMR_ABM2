@@ -14,6 +14,7 @@ def flatten_list(list_array):
 
 sys.path.insert(0, "../../pompjax/pompjax/")
 sys.path.insert(0, "../..")
+sys.path.insert(0, "../")
 
 from global_config import config
 
