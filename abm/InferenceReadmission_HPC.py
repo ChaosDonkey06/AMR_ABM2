@@ -197,7 +197,6 @@ if_settings["assimilation_dates"] = assim_dates
 from data_utils import create_obs_building_amro
 from infer_utils import run_amro_inference
 
-
 ########-########-#######
 
 path_to_amro = os.path.join(data_cluster_dir, "long_files_8_25_2021", "amro_ward.csv" )
