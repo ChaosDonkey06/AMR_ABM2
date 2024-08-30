@@ -40,7 +40,7 @@ import argparse
 
 parser  = argparse.ArgumentParser(description='Create Configuration')
 parser.add_argument('--idx_row', type=int, help='scenario row index', default=0)
-idx_row = parser.parse_args().idx_row
+idx_row = parser.parse_args().idx_row-1
 
 print("running for row: ", idx_row)
 
