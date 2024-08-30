@@ -7,6 +7,7 @@ utils_local/building2title.py
 __pycache__/
 *.py[cod]
 *$py.class
+*.out
 
 # C extensions
 *.so
