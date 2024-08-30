@@ -5,11 +5,11 @@
 #SBATCH --ntasks-per-node=1
 #SBATCH --time=8:00:00
 #SBATCH --mem=4GB
-#SBATCH --job-name=myTest
+#SBATCH --job-name=synthetic_inferences
 #SBATCH --mail-type=END
 #SBATCH --mail-user=jc12343@nyu.edu
-#SBATCH --output=slurm_%j.out
-#SBATCH --array=1-7
+#SBATCH --output=out/slurm_%j.out
+#SBATCH --array=1-36
 
 module load python/intel/3.8.6
 

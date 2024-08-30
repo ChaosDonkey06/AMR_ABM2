@@ -43,6 +43,7 @@ parser.add_argument('--idx_row', type=int, help='scenario row index', default=0)
 idx_row = parser.parse_args().idx_row
 
 print("running for row: ", idx_row)
+
 ####-####-####-####-####-####-####-####-####-####-####
 
 def simulate_abm(f, f0, g, θ, model_settings):
@@ -187,41 +188,40 @@ for id_run in range(4):
     if os.path.isfile(os.path.join(path_to_save, f"{str(id_run).zfill(3)}posterior.npz")):
         continue
     else:
-        continue
 
-    model_settings["param_truth"]     = [row["rho"], row["beta"]]
+        model_settings["param_truth"]     = [row["rho"], row["beta"]]
 
-    alpha               = 1/120
-    init_state          = lambda θ: amr_abm(t = 0,
-                                            agents_state   = np.zeros((model_settings["n"], model_settings["m"])),
-                                            gamma          = gamma,
-                                            beta           = θ[1, :],
-                                            alpha          = alpha,
-                                            movement       = movement_df[movement_df["date"]==dates_simulation[0]],
-                                            ward2size      = ward2size,
-                                            model_settings = model_settings)
+        alpha               = 1/120
+        init_state          = lambda θ: amr_abm(t = 0,
+                                                agents_state   = np.zeros((model_settings["n"], model_settings["m"])),
+                                                gamma          = gamma,
+                                                beta           = θ[1, :],
+                                                alpha          = alpha,
+                                                movement       = movement_df[movement_df["date"]==dates_simulation[0]],
+                                                ward2size      = ward2size,
+                                                model_settings = model_settings)
 
-    process       = lambda t, x, θ: amr_abm(t = t,
-                                            agents_state   = x,
-                                            gamma          = gamma,
-                                            beta           = θ[1, :],
-                                            alpha          = alpha,
-                                            movement       = movement_df[movement_df["date"]==dates_simulation[t]],
-                                            ward2size      = ward2size,
-                                            model_settings = model_settings)
+        process       = lambda t, x, θ: amr_abm(t = t,
+                                                agents_state   = x,
+                                                gamma          = gamma,
+                                                beta           = θ[1, :],
+                                                alpha          = alpha,
+                                                movement       = movement_df[movement_df["date"]==dates_simulation[t]],
+                                                ward2size      = ward2size,
+                                                model_settings = model_settings)
 
-    obs_model = lambda t, x, θ: observe_cluster_individual(t = t,
-                                                            agents_state   = x,
-                                                            rho            = θ[0, :],
-                                                            movement       = movement_df[movement_df["date"]==dates_simulation[t]],
-                                                            model_settings = model_settings)
+        obs_model = lambda t, x, θ: observe_cluster_individual(t = t,
+                                                                agents_state   = x,
+                                                                rho            = θ[0, :],
+                                                                movement       = movement_df[movement_df["date"]==dates_simulation[t]],
+                                                                model_settings = model_settings)
 
-    run_amro_synthetic(f               = process,
-                        f0             = init_state,
-                        g              = obs_model,
-                        fsim           = simulate_abm,
-                        model_settings = model_settings,
-                        if_settings    = if_settings,
-                        id_run         = id_run,
-                        path_to_save   = path_to_save,
-                        use_mean       = False)
+        run_amro_synthetic(f               = process,
+                            f0             = init_state,
+                            g              = obs_model,
+                            fsim           = simulate_abm,
+                            model_settings = model_settings,
+                            if_settings    = if_settings,
+                            id_run         = id_run,
+                            path_to_save   = path_to_save,
+                            use_mean       = False)
