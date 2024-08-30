@@ -223,5 +223,5 @@ for id_run in range(4):
                         model_settings = model_settings,
                         if_settings    = if_settings,
                         id_run         = id_run,
-                        path_to_save   = path_to_samples,
+                        path_to_save   = path_to_save,
                         use_mean       = False)
