@@ -227,7 +227,6 @@ gamma  = np.round(gammas[0]*row.gamma, 3)
 path_to_save = os.path.join(results_cluster_dir, "gamma_sensitivity", amro, row["scenario"])
 os.makedirs(path_to_save, exist_ok=True)
 
-model_settings["param_truth"]     = [row["rho"], row["beta"]]
 if_settings["adjust_state_space"] = False
 if_settings["shrink_variance"]    = False
 
