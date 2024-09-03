@@ -14,6 +14,13 @@ ssh jc12343@greene.hpc.nyu.edu
 
          sbatch synthetic_inferences.sh
 
+   copy results to local db directory.
+
+         scp -r jc12343@greene.hpc.nyu.edu:/scratch/jc12343/shaman_lab/amr-hospitals/results/synthetic_inferences/ /Users/chaosdonkey06/Dropbox/shaman-lab/amr-hospitals2/results
+
+   - **results and discussion.** The first set of Figures present the convergence plots for the 3 levels of community prevalence.
+
+      
 
 3. what is the impact of the COVID19 peak in admissions?
    - **experiment.** inferences by avoiding the increasing peak in admission and carriage at the beginning of the data as well as the COVID19 peak in admissions.

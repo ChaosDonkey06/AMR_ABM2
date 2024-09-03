@@ -12,7 +12,7 @@ from matplotlib import ticker
 # Plot default setting
 SMALL_SIZE  = 15
 MEDIUM_SIZE = 18
-BIGGER_SIZE = 22
+BIGGER_SIZE = 20
 
 plt.rc('font', size=SMALL_SIZE, family='sans-serif', serif='Arial')          # controls default text sizes
 plt.rc('axes', titlesize=BIGGER_SIZE)     # fontsize of the axes title
