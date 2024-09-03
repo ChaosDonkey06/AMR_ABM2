@@ -231,10 +231,7 @@ model_settings["param_truth"]     = [row["rho"], row["beta"]]
 if_settings["adjust_state_space"] = False
 if_settings["shrink_variance"]    = False
 
-if os.path.isfile(os.path.join(path_to_save, f"{str(id_run).zfill(3)}posterior.npz")):
-    continue
-else:
-
+if not os.path.isfile(os.path.join(path_to_save, f"{str(id_run).zfill(3)}posterior.npz")):
     alpha         = 1/120
     init_state    = lambda θ:       amr_abm_readmissions(t = 0,
                                                     agents_state   = np.zeros((model_settings["n"], model_settings["m"])),
