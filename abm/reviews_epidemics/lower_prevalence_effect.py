@@ -12,8 +12,9 @@ import matplotlib.pyplot as plt
 def flatten_list(list_array):
     return list(itertools.chain(*list_array))
 
+sys.path.insert(0, "../../pompjax/pompjax/")
+sys.path.insert(0, "../..")
 sys.path.insert(0, "../")
-sys.path.insert(0,"../pompjax/pompjax/")
 
 from global_config import config
 
@@ -34,12 +35,12 @@ COLOR_LIST1           = ["#F8AFA8", "#FDDDA0", "#F5CDB4", "#74A089"]
 from utils_local.misc import amro2title, amro2cute
 import matplotlib.ticker as mtick
 
-####-####-####-####-####-####
+####-####-####-####-####-####-####-####-####-####-####
 import argparse
+####-####-####-####-####-####-####-####-####-####-####
 
 parser = argparse.ArgumentParser(description='Create Configuration')
-parser.add_argument('--amro_idx', type=int, help='microbial pathogen',
-       default=0)
+parser.add_argument('--amro_idx', type=int, help='microbial pathogen',  default=0)
 
 amro_search  = ['ESCHERICHIA COLI', 'KLEBSIELLA PNEUMONIAE',  'PSEUDOMONAS AERUGINOSA',
                 'METHICILLIN-SUSCEPTIBLE STAPHYLOCOCCUS AUREUS', 'METHICILLIN-RESISTANT STAPHYLOCOCCUS AUREUS',
@@ -78,7 +79,8 @@ def create_obs_infer(obs_sim, idx_infer, dates, model_settings, resample="W-Sun"
     infer_df.index.values[-1]    = model_settings["dates"][-1]
     return infer_df
 
-###-###-###-###-###-###-###-###-###-###-###-###
+###
+
 dates_simulation = pd.date_range(start="2020-02-01", end="2021-02-28", freq="D")
 
 movement_df                  = pd.read_csv(os.path.join(data_cluster_dir, "long_files_8_25_2021", 'patient_movement_2022-Nov.csv'), parse_dates=['date']).drop_duplicates(subset=["date", "mrn"], keep="first")
@@ -99,6 +101,7 @@ ward_size_df                 = ward_size_df.groupby(["ward", "ward_id"]).mean().
 ward2size                    = {r.ward_id: r.num_patients for idx_r, r in ward_size_df.iterrows()}
 
 id2ward                      = dict((v, k) for k, v in ward2id.items())
+
 ###-###-###-###-###-###-###-###-###-###-###-###
 
 selected_buildings = ['Allen Hospital-Allen', 'Harkness Pavilion-Columbia', 'Milstein Hospital-Columbia', 'Mschony-Chony', 'Presbyterian Hospital-Columbia']
