@@ -176,7 +176,6 @@ def amr_abm_readmissions(t, agents_state, gamma, beta, alpha, movement, ward2siz
 ###-###-###-###-###-###-###-###-###-###-###-###
 
 
-
 from models import amr_abm, observe_cluster_individual
 from data_utils import create_obs_building_amro
 from infer_utils import run_amro_inference
@@ -211,6 +210,7 @@ def empirical_prevalence(amro, path_to_prev="../data/amro_prevalence.csv"):
     amro_prev_df = pd.read_csv(path_to_prev)
     gammas       = amro_prev_df[amro_prev_df.amro==amro][["prevalence_mean1", "prevalence_mean2", "prevalence_mean3"]].values / 100
     return np.squeeze(gammas)
+###-###-###-###-###-###-###-###-###-###-###-###
 
 path_to_amro = os.path.join(data_cluster_dir, "long_files_8_25_2021", "amro_ward.csv" )
 id_run       = 0
