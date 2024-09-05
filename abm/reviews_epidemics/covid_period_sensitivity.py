@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 def flatten_list(list_array):
     return list(itertools.chain(*list_array))
 
-sys.path.insert(0, "../../pompjax/pompjax/")
+sys.path.insert(0,"../pompjax/pompjax/")
 sys.path.insert(0, "../..")
 sys.path.insert(0, "../")
 
@@ -35,7 +35,7 @@ COLOR_LIST1           = ["#F8AFA8", "#FDDDA0", "#F5CDB4", "#74A089"]
 from utils_local.misc import amro2title, amro2cute
 import matplotlib.ticker as mtick
 
-####-####-####-####-####-####-####-####-####-####-####
+####-####-####-####-####-####
 import argparse
 
 parser  = argparse.ArgumentParser(description='Create Configuration')
@@ -43,22 +43,25 @@ parser.add_argument('--idx_row', type=int, help='scenario row index', default=0)
 idx_row = parser.parse_args().idx_row
 
 print("running for row: ", idx_row)
-
 ####-####-####-####-####-####-####-####-####-####-####
+
 amro_search  = ['ESCHERICHIA COLI', 'KLEBSIELLA PNEUMONIAE',  'PSEUDOMONAS AERUGINOSA',
-                'METHICILLIN-SUSCEPTIBLE STAPHYLOCOCCUS AUREUS',
+                'METHICILLIN-SUSCEPTIBLE STAPHYLOCOCCUS AUREUS', 'METHICILLIN-RESISTANT STAPHYLOCOCCUS AUREUS',
                 'ENTEROCOCCUS FAECALIS', 'ENTEROCOCCUS FAECIUM']
 
-gammas                     = np.arange(0.3, 1+0.05, 0.05)[::-1]
-experiments_df             = pd.DataFrame(columns=["amro", "gamma"])
-experiments_df["gamma"]    = list(gammas)*len(amro_search)
-experiments_df["amro"]     = flatten_list([[amro]*len(gammas) for amro in amro_search])
-experiments_df["scenario"] = list(np.arange(len(gammas))+1)*len(amro_search)
-experiments_df["scenario"] = experiments_df["scenario"].apply(lambda x: f"scenario{x}")
+ignore_dates                    = np.arange(2, 16+2, 2)
 
+experiments_df                  = pd.DataFrame(columns=["amro", "dates_ignored"])
+experiments_df["dates_ignored"] = list(ignore_dates)*len(amro_search)
+experiments_df["amro"]          = flatten_list([[amro]*len(ignore_dates) for amro in amro_search])
+experiments_df["scenario"]      = list(np.arange(len(ignore_dates))+1)*len(amro_search)
+experiments_df["scenario"]      = experiments_df["scenario"].apply(lambda x: f"scenario{x}")
+
+# it has 56 rows
 i_row, row = idx_row, experiments_df.iloc[idx_row]
-
+amro       = row.amro
 ####-####-####-####-####-####-####-####-####-####-####
+
 
 def empirical_prevalence(amro, path_to_prev="../data/amro_prevalence.csv"):
     amro_prev_df = pd.read_csv(path_to_prev)
@@ -127,12 +130,11 @@ ward_names_df["ward_id"]     = ward_names_df.apply(lambda x: np.where(ward_names
 
 ###-###-###-###-###-###-###-###-###-###-###-###
 
+selected_buildings     = ['Allen Hospital-Allen', 'Harkness Pavilion-Columbia', 'Milstein Hospital-Columbia', 'Mschony-Chony', 'Presbyterian Hospital-Columbia']
 building2id            = {selected_buildings[i]: i for i in range(len(selected_buildings))}
 wardid2buildingid      = {row.ward_id: row.buidling_id for i, row in ward_names_df.iterrows()}
 ward2buildingid        = {row.ward: row.buidling_id for i, row in ward_names_df.iterrows()}
 movement_df["cluster"] = movement_df.ward_id.map(wardid2buildingid)
-
-###-###-###-###-###-###-###-###-###-###-###-###
 
 class Patient:
     susceptible = 0
@@ -174,12 +176,8 @@ def amr_abm_readmissions(t, agents_state, gamma, beta, alpha, movement, ward2siz
     p_update = np.clip(p_update, 0, 1)
     return p_update
 
-###-###-###-###-###-###-###-###-###-###-###-###
 
-
-from models import amr_abm, observe_cluster_individual
-from data_utils import create_obs_building_amro
-from infer_utils import run_amro_inference
+from models import observe_cluster_individual
 
 if_settings = {
         "Nif"                : 30,          # number of iterations of the IF
@@ -203,64 +201,63 @@ model_settings   = {
 
 assim_dates                       = list(pd.date_range(start=pd.to_datetime("2020-02-01"), end=pd.to_datetime("2021-02-28"), freq="W-Sun"))
 assim_dates[-1]                   = dates_simulation[-1]
-if_settings["assimilation_dates"] = assim_dates
 
+from data_utils import create_obs_building_amro
+from infer_utils import run_amro_inference
 
-###-###-###-###-###-###-###-###-###-###-###-###
-def empirical_prevalence(amro, path_to_prev="../data/amro_prevalence.csv"):
-    amro_prev_df = pd.read_csv(path_to_prev)
-    gammas       = amro_prev_df[amro_prev_df.amro==amro][["prevalence_mean1", "prevalence_mean2", "prevalence_mean3"]].values / 100
-    return np.squeeze(gammas)
-###-###-###-###-###-###-###-###-###-###-###-###
+########-########-#######
 
 path_to_amro = os.path.join(data_cluster_dir, "long_files_8_25_2021", "amro_ward.csv" )
-id_run       = 0
+id_run       = 1
 
-from utils_local.misc import amro2title, amro2cute
-from abm_utils import run_amro_synthetic
-import matplotlib.pyplot as plt
+print("Running IF-EAKF for amro: ", amro2title(amro))
 
-
-amro   = row["amro"]
-gammas = empirical_prevalence(amro, path_to_prev="../../data/amro_prevalence.csv")
-gamma  = np.round(gammas[0]*row.gamma, 3)
-
-path_to_save = os.path.join(results_cluster_dir, "gamma_sensitivity", amro, row["scenario"])
+path_to_save = os.path.join(results_cluster_dir, "amro_inferences", "covid19_sensitivity", f"{amro2cute(amro)}")
 os.makedirs(path_to_save, exist_ok=True)
+
+gammas        = empirical_prevalence(amro, path_to_prev="../data/amro_prevalence.csv")
 
 if_settings["adjust_state_space"] = False
 if_settings["shrink_variance"]    = False
 
-if not os.path.isfile(os.path.join(path_to_save, f"{str(id_run).zfill(3)}posterior.npz")):
-    alpha         = 1/120
-    init_state    = lambda θ:       amr_abm_readmissions(t = 0,
-                                                    agents_state   = np.zeros((model_settings["n"], model_settings["m"])),
-                                                    gamma          = gamma,
-                                                    beta           = θ[1, :],
-                                                    alpha          = alpha,
-                                                    movement       = movement_df[movement_df["date"]==dates_simulation[0]],
-                                                    ward2size      = ward2size,
-                                                    model_settings = model_settings)
-    process       = lambda t, x, θ: amr_abm_readmissions(t = t,
-                                                    agents_state   = x,
-                                                    gamma          = gamma,
-                                                    beta           = θ[1, :],
-                                                    alpha          = alpha,
-                                                    movement       = movement_df[movement_df["date"]==dates_simulation[t]],
-                                                    ward2size      = ward2size,
-                                                    model_settings = model_settings)
-    obs_model = lambda t, x, θ: observe_cluster_individual(t = t,
-                                                    agents_state   = x,
-                                                    rho            = θ[0, :],
-                                                    movement       = movement_df[movement_df["date"]==dates_simulation[t]],
-                                                    model_settings = model_settings)
+for i_gamma, gamma in enumerate(gammas):
 
-    obs_df    = create_obs_building_amro(amro, model_settings, ward2buildingid, path_to_amro)
-    run_amro_inference(f               = process,
-                        f0             = init_state,
-                        g              = obs_model,
-                        obs_df         = obs_df,
-                        model_settings = model_settings,
-                        if_settings    = if_settings,
-                        id_run         = id_run,
-                        path_to_save   = path_to_save)
+    path_to_save = os.path.join(results_cluster_dir, "amro_inferences", "covid19_sensitivity",
+                                    f"{amro2cute(amro)}", row.scenario, f"prevalence{i_gamma+1}")
+
+    dates_ignored = row.dates_ignored
+    if_settings["assimilation_dates"] = assim_dates[dates_ignored:]
+
+    if not os.path.isfile(os.path.join(path_to_save, f"{str(id_run).zfill(3)}posterior.npz")):
+        alpha         = 1/120
+        init_state    = lambda θ:       amr_abm_readmissions(t = 0,
+                                                        agents_state   = np.zeros((model_settings["n"], model_settings["m"])),
+                                                        gamma          = gamma,
+                                                        beta           = θ[1, :],
+                                                        alpha          = alpha,
+                                                        movement       = movement_df[movement_df["date"]==dates_simulation[0]],
+                                                        ward2size      = ward2size,
+                                                        model_settings = model_settings)
+        process       = lambda t, x, θ: amr_abm_readmissions(t = t,
+                                                        agents_state   = x,
+                                                        gamma          = gamma,
+                                                        beta           = θ[1, :],
+                                                        alpha          = alpha,
+                                                        movement       = movement_df[movement_df["date"]==dates_simulation[t]],
+                                                        ward2size      = ward2size,
+                                                        model_settings = model_settings)
+        obs_model = lambda t, x, θ: observe_cluster_individual(t = t,
+                                                        agents_state   = x,
+                                                        rho            = θ[0, :],
+                                                        movement       = movement_df[movement_df["date"]==dates_simulation[t]],
+                                                        model_settings = model_settings)
+
+        obs_df    = create_obs_building_amro(amro, model_settings, ward2buildingid, path_to_amro)
+        run_amro_inference(f               = process,
+                            f0             = init_state,
+                            g              = obs_model,
+                            obs_df         = obs_df,
+                            model_settings = model_settings,
+                            if_settings    = if_settings,
+                            id_run         = id_run,
+                            path_to_save   = path_to_save)
