@@ -26,3 +26,5 @@ ssh jc12343@greene.hpc.nyu.edu
 3. what is the impact of the COVID19 peak in admissions?
    - **experiment.** inferences by avoiding the increasing peak in admission and carriage at the beginning of the data as well as the COVID19 peak in admissions.
 
+
+         sbatch synthetic_covid_period_sensitivity.sh

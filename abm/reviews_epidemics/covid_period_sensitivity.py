@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 def flatten_list(list_array):
     return list(itertools.chain(*list_array))
 
-sys.path.insert(0,"../pompjax/pompjax/")
+sys.path.insert(0, "../../pompjax/pompjax/")
 sys.path.insert(0, "../..")
 sys.path.insert(0, "../")
 
@@ -208,17 +208,19 @@ from infer_utils import run_amro_inference
 ########-########-#######
 
 path_to_amro = os.path.join(data_cluster_dir, "long_files_8_25_2021", "amro_ward.csv" )
-id_run       = 1
+id_run       = 0
 
 print("Running IF-EAKF for amro: ", amro2title(amro))
 
 path_to_save = os.path.join(results_cluster_dir, "amro_inferences", "covid19_sensitivity", f"{amro2cute(amro)}")
 os.makedirs(path_to_save, exist_ok=True)
 
-gammas        = empirical_prevalence(amro, path_to_prev="../data/amro_prevalence.csv")
+gammas        = empirical_prevalence(amro, path_to_prev="../../data/amro_prevalence.csv")
 
 if_settings["adjust_state_space"] = False
 if_settings["shrink_variance"]    = False
+
+i_gamma, gamma = next(enumerate(gammas))
 
 for i_gamma, gamma in enumerate(gammas):
 
@@ -228,36 +230,38 @@ for i_gamma, gamma in enumerate(gammas):
     dates_ignored = row.dates_ignored
     if_settings["assimilation_dates"] = assim_dates[dates_ignored:]
 
-    if not os.path.isfile(os.path.join(path_to_save, f"{str(id_run).zfill(3)}posterior.npz")):
-        alpha         = 1/120
-        init_state    = lambda θ:       amr_abm_readmissions(t = 0,
-                                                        agents_state   = np.zeros((model_settings["n"], model_settings["m"])),
-                                                        gamma          = gamma,
-                                                        beta           = θ[1, :],
-                                                        alpha          = alpha,
-                                                        movement       = movement_df[movement_df["date"]==dates_simulation[0]],
-                                                        ward2size      = ward2size,
-                                                        model_settings = model_settings)
-        process       = lambda t, x, θ: amr_abm_readmissions(t = t,
-                                                        agents_state   = x,
-                                                        gamma          = gamma,
-                                                        beta           = θ[1, :],
-                                                        alpha          = alpha,
-                                                        movement       = movement_df[movement_df["date"]==dates_simulation[t]],
-                                                        ward2size      = ward2size,
-                                                        model_settings = model_settings)
-        obs_model = lambda t, x, θ: observe_cluster_individual(t = t,
-                                                        agents_state   = x,
-                                                        rho            = θ[0, :],
-                                                        movement       = movement_df[movement_df["date"]==dates_simulation[t]],
-                                                        model_settings = model_settings)
+    if os.path.isfile(os.path.join(path_to_save, f"{str(id_run).zfill(3)}posterior.npz")):
+        continue
 
-        obs_df    = create_obs_building_amro(amro, model_settings, ward2buildingid, path_to_amro)
-        run_amro_inference(f               = process,
-                            f0             = init_state,
-                            g              = obs_model,
-                            obs_df         = obs_df,
-                            model_settings = model_settings,
-                            if_settings    = if_settings,
-                            id_run         = id_run,
-                            path_to_save   = path_to_save)
+    alpha         = 1/120
+    init_state    = lambda θ:       amr_abm_readmissions(t = 0,
+                                                    agents_state   = np.zeros((model_settings["n"], model_settings["m"])),
+                                                    gamma          = gamma,
+                                                    beta           = θ[1, :],
+                                                    alpha          = alpha,
+                                                    movement       = movement_df[movement_df["date"]==dates_simulation[0]],
+                                                    ward2size      = ward2size,
+                                                    model_settings = model_settings)
+    process       = lambda t, x, θ: amr_abm_readmissions(t = t,
+                                                    agents_state   = x,
+                                                    gamma          = gamma,
+                                                    beta           = θ[1, :],
+                                                    alpha          = alpha,
+                                                    movement       = movement_df[movement_df["date"]==dates_simulation[t]],
+                                                    ward2size      = ward2size,
+                                                    model_settings = model_settings)
+    obs_model = lambda t, x, θ: observe_cluster_individual(t = t,
+                                                    agents_state   = x,
+                                                    rho            = θ[0, :],
+                                                    movement       = movement_df[movement_df["date"]==dates_simulation[t]],
+                                                    model_settings = model_settings)
+
+    obs_df    = create_obs_building_amro(amro, model_settings, ward2buildingid, path_to_amro)
+    run_amro_inference(f               = process,
+                        f0             = init_state,
+                        g              = obs_model,
+                        obs_df         = obs_df,
+                        model_settings = model_settings,
+                        if_settings    = if_settings,
+                        id_run         = id_run,
+                        path_to_save   = path_to_save)
