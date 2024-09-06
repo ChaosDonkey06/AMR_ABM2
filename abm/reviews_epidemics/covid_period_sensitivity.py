@@ -220,18 +220,20 @@ gammas        = empirical_prevalence(amro, path_to_prev="../../data/amro_prevale
 if_settings["adjust_state_space"] = False
 if_settings["shrink_variance"]    = False
 
-i_gamma, gamma = next(enumerate(gammas))
+
+path_to_save = os.path.join(results_cluster_dir, "amro_inferences", "covid19_sensitivity",
+                                    f"{amro2cute(amro)}", row.scenario)
+os.makedirs(path_to_save, exist_ok=True)
 
 for i_gamma, gamma in enumerate(gammas):
 
-    path_to_save = os.path.join(results_cluster_dir, "amro_inferences", "covid19_sensitivity",
-                                    f"{amro2cute(amro)}", row.scenario, f"prevalence{i_gamma+1}")
-    os.makedirs(path_to_save, exist_ok=True)
+    path_to_samples = os.path.join(path_to_save, f"prevalence{i_gamma+1}")
+    os.makedirs(path_to_samples, exist_ok=True)
 
     dates_ignored = row.dates_ignored
     if_settings["assimilation_dates"] = assim_dates[dates_ignored:]
 
-    if os.path.isfile(os.path.join(path_to_save, f"{str(id_run).zfill(3)}posterior.npz")):
+    if os.path.isfile(os.path.join(path_to_samples, f"{str(id_run).zfill(3)}posterior.npz")):
         continue
 
     alpha         = 1/120
@@ -265,4 +267,4 @@ for i_gamma, gamma in enumerate(gammas):
                         model_settings = model_settings,
                         if_settings    = if_settings,
                         id_run         = id_run,
-                        path_to_save   = path_to_save)
+                        path_to_save   = path_to_samples)
