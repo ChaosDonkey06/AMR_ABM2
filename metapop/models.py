@@ -18,7 +18,6 @@ def check_state_space(x, pop=None):
     return np.clip(x, 0, pop)
 
 def process_metapop(t, x, gamma, beta, delta, Nmean, N, A, D, M, model_settings=None):
-
     """ Susceptible - Colonized meta-population model
 
     Args:
