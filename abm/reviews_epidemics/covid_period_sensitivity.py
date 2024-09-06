@@ -226,6 +226,7 @@ for i_gamma, gamma in enumerate(gammas):
 
     path_to_save = os.path.join(results_cluster_dir, "amro_inferences", "covid19_sensitivity",
                                     f"{amro2cute(amro)}", row.scenario, f"prevalence{i_gamma+1}")
+    os.makedirs(path_to_save, exist_ok=True)
 
     dates_ignored = row.dates_ignored
     if_settings["assimilation_dates"] = assim_dates[dates_ignored:]
