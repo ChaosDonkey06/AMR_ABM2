@@ -8,8 +8,8 @@
 #SBATCH --job-name=synthetic_inferences
 #SBATCH --mail-type=END
 #SBATCH --mail-user=jc12343@nyu.edu
-#SBATCH --output=out/slurm_%j.out
-#SBATCH --array=0-55
+#SBATCH --output=out2/slurm_%j.out
+#SBATCH --array=0-62
 
 module load python/intel/3.8.6
 

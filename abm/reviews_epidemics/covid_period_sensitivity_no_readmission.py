@@ -50,13 +50,13 @@ amro_search  = ['ESCHERICHIA COLI', 'KLEBSIELLA PNEUMONIAE',  'PSEUDOMONAS AERUG
                 'METHICILLIN-SUSCEPTIBLE STAPHYLOCOCCUS AUREUS', 'METHICILLIN-RESISTANT STAPHYLOCOCCUS AUREUS',
                 'ENTEROCOCCUS FAECALIS', 'ENTEROCOCCUS FAECIUM']
 
-ignore_dates                    = np.arange(2, 16+2, 2)
+ignore_dates                    = np.arange(0, 16+2, 2)
 
 experiments_df                  = pd.DataFrame(columns=["amro", "dates_ignored"])
 experiments_df["dates_ignored"] = list(ignore_dates)*len(amro_search)
 experiments_df["amro"]          = flatten_list([[amro]*len(ignore_dates) for amro in amro_search])
 experiments_df["scenario"]      = list(np.arange(len(ignore_dates))+1)*len(amro_search)
-experiments_df["scenario"]      = experiments_df["scenario"].apply(lambda x: f"scenario{x}")
+experiments_df["scenario"]      = experiments_df["scenario"].apply(lambda x: f"scenario{x-1}")
 
 # it has 56 rows
 i_row, row = idx_row, experiments_df.iloc[idx_row]
@@ -221,10 +221,10 @@ gammas        = empirical_prevalence(amro, path_to_prev="../../data/amro_prevale
 if_settings["adjust_state_space"] = False
 if_settings["shrink_variance"]    = False
 
-
 path_to_save = os.path.join(results_cluster_dir, "amro_inferences", "covid19_sensitivity", "no_readmission",
                                     f"{amro2cute(amro)}", row.scenario)
 os.makedirs(path_to_save, exist_ok=True)
+
 from models import amr_abm
 
 for i_gamma, gamma in enumerate(gammas):
