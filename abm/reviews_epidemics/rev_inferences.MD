@@ -25,8 +25,18 @@ ssh jc12343@greene.hpc.nyu.edu
 3. what is the impact of the COVID19 peak in admissions?
    - **experiment.** inferences by avoiding the increasing peak in admission and carriage at the beginning of the data as well as the COVID19 peak in admissions.
 
+      - run inferences with model with re-admissions.
          sbatch synthetic_covid_period_sensitivity.sh
+
+      - run inferences with model with NO re-admissions.
+         sbatch synthetic_covid_period_sensitivity1.sh
 
       copy results to local.
 
          scp -r jc12343@greene.hpc.nyu.edu:/scratch/jc12343/shaman_lab/amr-hospitals/results/amro_inferences/covid19_sensitivity/ /Users/chaosdonkey06/Dropbox/shaman-lab/amr-hospitals2/results
+
+         scp -r jc12343@greene.hpc.nyu.edu:/scratch/jc12343/shaman_lab/amr-hospitals/results/amro_inferences/covid19_sensitivity/no_readmission /Users/chaosdonkey06/Dropbox/shaman-lab/amr-hospitals2/results/covid19_sensitivity
+
+asda
+
+         scp jc12343@greene.hpc.nyu.edu:/scratch/jc12343/shaman_lab/amr-hospitals/data/observations.csv /Users/chaosdonkey06/Dropbox/shaman-lab/amr-hospitals2/data/

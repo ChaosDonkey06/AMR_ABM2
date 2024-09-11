@@ -181,6 +181,7 @@ from data_utils import create_obs_building_amro
 from infer_utils import run_amro_inference
 
 if_settings = {
+
         "Nif"                : 30,          # number of iterations of the IF
         "type_cooling"       : "geometric", # type of cooling schedule
         "shrinkage_factor"   : 0.9,         # shrinkage factor for the cooling schedule
@@ -255,6 +256,7 @@ if not os.path.isfile(os.path.join(path_to_save, f"{str(id_run).zfill(3)}posteri
                                                     model_settings = model_settings)
 
     obs_df    = create_obs_building_amro(amro, model_settings, ward2buildingid, path_to_amro)
+
     run_amro_inference(f               = process,
                         f0             = init_state,
                         g              = obs_model,

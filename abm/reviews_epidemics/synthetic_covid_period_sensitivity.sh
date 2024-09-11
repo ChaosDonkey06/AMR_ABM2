@@ -17,4 +17,4 @@ RUNDIR=/scratch/jc12343/shaman_lab/AMR_ABM2/abm/reviews_epidemics
 cd $RUNDIR
 
 ## Execute the desired Stata do file script
-python3 covid_period_sensitivity.py --idx_row $SLURM_ARRAY_TASK_ID
+python3 covid_period_sensitivity1.py --idx_row $SLURM_ARRAY_TASK_ID
