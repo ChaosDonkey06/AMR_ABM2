@@ -169,7 +169,8 @@ def amr_abm_readmissions(t, agents_state, gamma, beta, alpha, movement, ward2siz
 
     for i, ward_id in enumerate(movement["ward_id"].unique()):
         patients_ward = movement[movement["ward_id"]==ward_id]["mrn_id"].values
-        λ_i = beta * np.sum(p_update[patients_ward, :]==Patient.colonized) / ward2size[ward_id]
+        λ_i           = beta * np.sum(p_update[patients_ward, :]==Patient.colonized) / ward2size[ward_id]
+
         p_update[patients_ward, :] = p_update[patients_ward, :] + Patient.colonized * (np.random.random(size=(patients_ward.shape[0], m)) <= λ_i)
     p_update = np.clip(p_update, 0, 1)
     return p_update
@@ -181,7 +182,6 @@ from data_utils import create_obs_building_amro
 from infer_utils import run_amro_inference
 
 if_settings = {
-
         "Nif"                : 30,          # number of iterations of the IF
         "type_cooling"       : "geometric", # type of cooling schedule
         "shrinkage_factor"   : 0.9,         # shrinkage factor for the cooling schedule
@@ -196,8 +196,8 @@ model_settings   = {
                     "k"                 : movement_df.cluster.unique().shape[0],
                     "dates"             : pd.date_range(start="2020-02-01", end="2021-02-28", freq="D"),
                     "dates_simulation"  : pd.date_range(start="2020-02-01", end="2021-02-28", freq="D"),
-                    "T"                 : len(dates_simulation),  # time to run
                     "num_build"         : len(np.unique(list(wardid2buildingid.values()))),
+                    "T"                 : len(dates_simulation),  # time to run
                     "k"                 : len(np.unique(list(wardid2buildingid.values())))# observing at the building aggregation
                 }
 

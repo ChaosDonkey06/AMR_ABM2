@@ -8,8 +8,9 @@ def run_amro_inference(f, f0, g, obs_df, model_settings, if_settings, id_run=0, 
 
     ρmin              = 0.01/2 # test sensitivity minimum
     ρmax              = 0.2    # test sensitivity maximum
+    # - # - # - # - #
     βmin              = 0.00   # transmission rate minimum
-    βmax              = 0.2   # transmission rate maximum
+    βmax              = 0.2    # transmission rate maximum
 
     state_space_range = np.array([0, 1])
     parameters_range  = np.array([[ρmin, ρmax],    [βmin, βmax]])
