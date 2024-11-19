@@ -1,14 +1,13 @@
 This repository has the code for reproducing the results in the **Epidemics** paper entitled *Estimating nosocomial transmission of micro-organisms in hospital settings using patient records and culture data*.
 
-**Authors:** Jaime Cascante Vega $^{1,\star}$, Rami Yaari $^{1}$, Tal Robin$^{1}$, Lingsheng Wen $^{2}$, Jason Zucker $^{2}$, Anne-Catrin Uhlemann $^{2}$, Sen Pei $^{1}$, Jeffrey Shaman $^{1,3}$
+**Authors:** Jaime Cascante Vega $^{1,4}$, Rami Yaari $^{1}$, Tal Robin$^{1}$, Lingsheng Wen $^{2}$, Jason Zucker $^{2}$, Anne-Catrin Uhlemann $^{2}$, Sen Pei $^{1}$, Jeffrey Shaman $^{1,3}$
 
 **Affiliations:** 
 
 1. Department of Environmental Health Sciences, Mailman School of Public Health, Columbia University, New York, NY, USA.
 2. Division of Infectious Diseases, Department of Medicine, Columbia University, College of Physicians and Surgeons, New York, New York, USA.
-3. Columbia Climate School, Columbia University, New York, NY, USA. \n
-
-$\star.$ I moved. My current affiliation is: Department of Biology, Center for Genomics and Systems Biology, New York University, New York, NY, USA
+3. Columbia Climate School, Columbia University, New York, NY, USA.
+4. Current affiliation: Department of Biology, Center for Genomics and Systems Biology, New York University, New York, NY, USA
 
 The repository tracked all the research process in the associated jupyter notebooks. Those were used to process the data, conduct parameter inference and produce the manuscript Figures. As a consequence it is not organized. In below I list what would you need to reproduce the results. The data however has individual patient information and thus is private. To have access to the data please email the corresponding authors: [Jeffrey Shaman](https://www.publichealth.columbia.edu/profile/jeffrey-shaman-phd) and [Sen Pei](https://www.publichealth.columbia.edu/profile/sen-pei).
 
