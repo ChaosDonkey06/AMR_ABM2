@@ -1,4 +1,4 @@
-This repository has the code for reproducing the results in the **Epidemics** paper entitled [*Estimating nosocomial transmission of micro-organisms in hospital settings using patient records and culture data*.](https://www.sciencedirect.com/science/article/pii/S1755436525000052).
+This repository contains the code for reproducing the results in the **Epidemics** paper entitled [*Estimating nosocomial transmission of micro-organisms in hospital settings using patient records and culture data*.](https://www.sciencedirect.com/science/article/pii/S1755436525000052).
 
 
 **Authors:** Jaime Cascante Vega $^{1,4}$, Rami Yaari $^{1}$, Tal Robin $^{1}$, Lingsheng Wen $^{2}$, Jason Zucker $^{2}$, Anne-Catrin Uhlemann $^{2}$, Sen Pei $^{1}$, Jeffrey Shaman $^{1,3}$
